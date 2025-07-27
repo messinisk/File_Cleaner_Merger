@@ -1,0 +1,15 @@
+
+---
+
+## ⚙️ Τεχνολογίες
+
+- Python 3.10+
+- `os`, `hashlib`, `logging`, `random`
+- `unittest` για testing
+
+---
+
+## 🚀 Εκτέλεση
+
+```bash
+python main.py <directory_path>

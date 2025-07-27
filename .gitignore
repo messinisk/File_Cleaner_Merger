@@ -1,0 +1,12 @@
+scr/file_dir
+/scr/name
+__pycache__
+/win/
+bandit_report.json
+test_run.txt
+tk_gui.py
+file_inspector.log
+htmlcov/
+.coverage
+.vscode
+.ruff_cache
