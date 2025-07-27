@@ -62,7 +62,7 @@ def merge_random_conflict(file_a: dict, file_b: dict) -> None:  # type: ignore
 
 
 def delete_duplicates(duplicate_files: list[dict]) -> None:  # type: ignore
-    keep = duplicate_files[0]  # type: ignore
+    duplicate_files[0]  # type: ignore
     for dup in duplicate_files[1:]:  # type: ignore
         try:
             os.remove(dup["path"])  # type: ignore

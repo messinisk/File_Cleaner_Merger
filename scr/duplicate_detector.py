@@ -4,6 +4,8 @@ import logging
 import os
 from collections import defaultdict
 from datetime import datetime
+from exclusion_config import is_excluded_dir, is_system_path
+
 
 # -------------------------------
 # 🔧 Ρύθμιση του logging
@@ -56,52 +58,98 @@ def inspect_directory_state(base_path: str) -> list[dict]:  # type: ignore
     - ίδιο ή διαφορετικό περιεχόμενο (ως εκδόσεις)
     - ίδια ημερομηνία δημιουργίας
     """
-    file_info_list = []
     base_path = os.path.abspath(base_path)
-    if not os.path.isdir(base_path):
-        logging.error(f"Η διαδρομή δεν είναι έγκυρος φάκελος: {base_path}")
+
+    if not is_valid_directory(base_path):
         return []
 
+    file_info_list = collect_file_info(base_path)
+    log_skipped_files(base_path)
+    name_map = group_files_by_name(file_info_list)
+    analyze_duplicate_groups(name_map)
+
+    return file_info_list
+
+
+def is_valid_directory(path: str) -> bool:
+    """Επιστρέφει True αν η διαδρομή είναι έγκυρος φάκελος, αλλιώς κάνει log και False."""
+    if not os.path.isdir(path):
+        logging.error(f"Η διαδρομή δεν είναι έγκυρος φάκελος: {path}")
+        return False
+    return True
+
+
+def collect_file_info(base_path: str) -> list[dict]:
+    file_info_list = []
     for root, _, files in os.walk(base_path):
+        if is_excluded_dir(root) or is_system_path(root):
+            logging.warning(f"⛔ Αγνοήθηκε φάκελος συστήματος ή αποκλεισμένος: {root}")
+            continue
         for file in files:
             full_path = os.path.join(root, file)
             if os.path.isfile(full_path):
-                metadata = get_file_metadata(full_path)  # type: ignore
+                metadata = get_file_metadata(full_path)
                 if metadata:
-                    file_info_list.append(metadata)  # type: ignore
-            else:
+                    file_info_list.append(metadata)
+    return file_info_list
+
+
+def log_skipped_files(base_path: str) -> None:
+    """Κάνει logging για κάθε στοιχείο που δεν είναι αρχείο."""
+    for root, _, files in os.walk(base_path):
+        for file in files:
+            full_path = os.path.join(root, file)
+            if not os.path.isfile(full_path):
                 logging.warning(f"Παραλείφθηκε (δεν είναι αρχείο): {full_path}")
 
-    # Ομαδοποίηση κατά όνομα αρχείου
-    name_map = defaultdict(list)  # type: ignore
-    for info in file_info_list:  # type: ignore
-        name_map[info["name"]].append(info)  # type: ignore
 
-    print(f"\n📂 Σάρωση φακέλου: {base_path}\n")
+def group_files_by_name(file_info_list: list[dict]) -> dict[str, list[dict]]:
+    """Ομαδοποιεί τα αρχεία με βάση το όνομά τους."""
+    name_map: dict[str, list[dict]] = defaultdict(list)
+    for info in file_info_list:
+        name_map[info["name"]].append(info)
+    return name_map
 
-    for name, files in name_map.items():  # type: ignore
-        if len(files) == 1:  # type: ignore
+
+def analyze_duplicate_groups(name_map: dict[str, list[dict]]) -> None:
+    """Αναλύει τα αρχεία με ίδιο όνομα και καταγράφει αν είναι ίδια ή διαφορετικά."""
+    for name, files in name_map.items():
+        if not should_analyze_group(files):
             continue
 
-        # Ομαδοποίηση κατά περιεχόμενο (hash)
-        versions: dict[str, list[dict]] = defaultdict(list)
-
-        for f in files:  # type: ignore
-            versions[f["hash"]].append(f)  # type: ignore
-
-        print(f"📄 Αρχείο με ίδιο όνομα: {name}")
-
-        if len(versions) == 1:  # type: ignore
-            print("  ✅ Ίδιο περιεχόμενο σε όλες τις τοποθεσίες")
+        versions = group_files_by_hash(files)
+        if len(versions) == 1:
+            log_identical_group(name)
         else:
-            print("  🌀 Διαφορετικές εκδόσεις:")
-            for version_hash, version_files in versions.items():  # type: ignore
-                print(f"    🔸 Έκδοση (hash: {version_hash[:10]}...)")
-                for vf in version_files:
-                    print(f" → {vf['path']} | 🕒 {vf['modified']}")
-                    logging.info(f"Έκδοση αρχείου '{name}' σε {vf['path']}")
+            log_versioned_group(name, versions)
 
-    return file_info_list
+
+def should_analyze_group(files: list[dict]) -> bool:
+    """Επιστρέφει True αν η λίστα έχει περισσότερα από 1 αρχεία."""
+    return len(files) > 1
+
+
+def log_identical_group(name: str) -> None:
+    """Καταγράφει ότι όλα τα αρχεία είναι ίδια."""
+    logging.info(f"Αρχείο '{name}' έχει ίδιο περιεχόμενο σε όλες τις τοποθεσίες.")
+
+
+def log_versioned_group(name: str, versions: dict[str, list[dict]]) -> None:
+    """Καταγράφει τις διαφορετικές εκδόσεις του αρχείου."""
+    logging.info(f"Αρχείο '{name}' έχει διαφορετικές εκδόσεις:")
+    for version_hash, version_files in versions.items():
+        for vf in version_files:
+            logging.info(
+                f"Έκδοση '{name}' | hash: {version_hash[:10]} | 🕒 {vf['modified']} | 📍 {vf['path']}"
+            )
+
+
+def group_files_by_hash(files: list[dict]) -> dict[str, list[dict]]:
+    """Ομαδοποιεί αρχεία με βάση το hash."""
+    versions: dict[str, list[dict]] = defaultdict(list)
+    for f in files:
+        versions[f["hash"]].append(f)
+    return versions
 
 
 def get_all_file_info(

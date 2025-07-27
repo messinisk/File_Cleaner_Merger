@@ -3,6 +3,8 @@ import shutil
 import sys
 import tempfile
 import unittest
+import stat  # noqa: F401
+
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from duplicate_detector import inspect_directory_state  # type: ignore
@@ -53,6 +55,78 @@ class TestDuplicateDetector(unittest.TestCase):
         log_path = "file_inspector.log"
         inspect_directory_state(self.test_dir)
         self.assertTrue(os.path.exists(log_path))
+
+    def test_empty_directory(self):
+        empty_dir = tempfile.mkdtemp()
+        try:
+            result = inspect_directory_state(empty_dir)
+            self.assertEqual(result, [])
+        finally:
+            shutil.rmtree(empty_dir)
+
+    def test_invalid_directory(self):
+        result = inspect_directory_state("non_existing_path_123456")
+        self.assertEqual(result, [])
+
+    @unittest.skipIf(os.name == "nt", "Windows does not support chmod 000 reliably")
+    def test_file_without_permission(self):
+        restricted_file = os.path.join(self.test_dir, "restricted.txt")
+        with open(restricted_file, "w") as f:
+            f.write("Restricted content")
+
+        os.chmod(restricted_file, 0o000)  # Remove all permissions (Unix only)
+
+        try:
+            result = inspect_directory_state(self.test_dir)
+            self.assertFalse(any(f["path"] == restricted_file for f in result))
+        finally:
+            os.chmod(restricted_file, 0o644)
+
+    def test_excluded_directory_pycache(self):
+        pycache_dir = os.path.join(self.test_dir, "__pycache__")
+        os.makedirs(pycache_dir)
+        ignored_file = os.path.join(pycache_dir, "ignored.pyc")
+        with open(ignored_file, "w") as f:
+            f.write("This should be ignored")
+
+        result = inspect_directory_state(self.test_dir)
+        self.assertFalse(any("ignored.pyc" in f["path"] for f in result))
+
+    # def test_system_path_exclusion_simulated(self):
+    #     # Προσομοίωση system path (όχι πραγματική πρόσβαση)
+    #     system_like = os.path.join(self.test_dir, "proc")
+    #     os.makedirs(system_like)
+    #     fake_sys_file = os.path.join(system_like, "fake")
+    #     with open(fake_sys_file, "w") as f:
+    #         f.write("fake")
+
+    #     # Αν έχουμε προσομοίωση system path exclusion, το αρχείο αγνοείται
+    #     result = inspect_directory_state(self.test_dir)
+    #     self.assertFalse(any("fake" in f["path"] for f in result))
+    
+    def test_is_system_path_override(self):
+        from exclusion_config import is_system_path
+
+        # Προσομοιωμένο system path για Linux
+        sys_path = "/proc"  # noqa: F841
+        if os.name == "nt":
+            # Skip test σε Windows
+            self.skipTest("System path simulation not reliable on Windows")
+        else:
+            self.assertTrue(is_system_path("/proc/fake_entry"))
+            self.assertFalse(is_system_path("/home/user/project"))
+    
+    def test_is_system_path_windows(self):
+        from exclusion_config import is_system_path
+
+        if os.name != "nt":
+            self.skipTest("This test είναι μόνο για Windows")
+
+        self.assertTrue(is_system_path("C:\\Windows\\System32"))
+        self.assertTrue(is_system_path("C:\\Program Files\\SomeApp"))
+        self.assertTrue(is_system_path("C:\\ProgramData\\config"))
+        self.assertFalse(is_system_path("C:\\Users\\User\\Documents\\myproject"))
+        self.assertFalse(is_system_path("F:\\clear_file_local\\scr"))
 
 
 if __name__ == "__main__":
