@@ -92,17 +92,6 @@ class TestDuplicateDetector(unittest.TestCase):
         result = inspect_directory_state(self.test_dir)
         self.assertFalse(any("ignored.pyc" in f["path"] for f in result))
 
-    # def test_system_path_exclusion_simulated(self):
-    #     # Προσομοίωση system path (όχι πραγματική πρόσβαση)
-    #     system_like = os.path.join(self.test_dir, "proc")
-    #     os.makedirs(system_like)
-    #     fake_sys_file = os.path.join(system_like, "fake")
-    #     with open(fake_sys_file, "w") as f:
-    #         f.write("fake")
-
-    #     # Αν έχουμε προσομοίωση system path exclusion, το αρχείο αγνοείται
-    #     result = inspect_directory_state(self.test_dir)
-    #     self.assertFalse(any("fake" in f["path"] for f in result))
     
     def test_is_system_path_override(self):
         from exclusion_config import is_system_path

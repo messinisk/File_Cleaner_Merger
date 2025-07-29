@@ -80,18 +80,25 @@ def is_valid_directory(path: str) -> bool:
 
 
 def collect_file_info(base_path: str) -> list[dict]:
-    file_info_list = []
-    for root, _, files in os.walk(base_path):
-        if is_excluded_dir(root) or is_system_path(root):
-            logging.warning(f"⛔ Αγνοήθηκε φάκελος συστήματος ή αποκλεισμένος: {root}")
-            continue
-        for file in files:
-            full_path = os.path.join(root, file)
-            if os.path.isfile(full_path):
-                metadata = get_file_metadata(full_path)
-                if metadata:
-                    file_info_list.append(metadata)
-    return file_info_list
+    """
+    Επιστρέφει λίστα μεταδεδομένων για κάθε αρχείο μέσα σε έναν φάκελο και τους υποφακέλους του.
+    
+    Αγνοεί:
+    - Φακέλους που καθορίζονται ως αποκλεισμένοι από τη ρύθμιση (exclusion_config)
+    - Συσχετισμένους φακέλους του συστήματος (όπως Python env, system dirs)
+
+    Επιστρέφει:
+    - Λίστα από λεξικά με πληροφορίες για κάθε έγκυρο αρχείο (π.χ. όνομα, διαδρομή, μέγεθος, hash κ.ά.)
+    """
+    return [
+        metadata
+        for root, _, files in os.walk(base_path)
+        if not is_excluded_dir(root) and not is_system_path(root)
+        for file in files
+        if os.path.isfile(full_path := os.path.join(root, file))
+        if (metadata := get_file_metadata(full_path))
+    ]
+
 
 
 def log_skipped_files(base_path: str) -> None:
