@@ -2,12 +2,13 @@ import logging
 import os
 import random
 
+
+
 logging.basicConfig(
     filename="file_inspector.log",
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
-
 
 def merge_by_version_date(file_a: dict, file_b: dict) -> None:  # type: ignore
     try:
@@ -59,7 +60,6 @@ def merge_random_conflict(file_a: dict, file_b: dict) -> None:  # type: ignore
 
     except Exception as e:
         logging.error(f"Σφάλμα τυχαίας συγχώνευσης: {e}")
-
 
 def delete_duplicates(duplicate_files: list[dict]) -> None:  # type: ignore
     duplicate_files[0]  # type: ignore

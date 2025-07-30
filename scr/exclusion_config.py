@@ -1,6 +1,7 @@
 import os
 import platform
 
+
 # Ονόματα φακέλων που θέλουμε πάντα να αγνοούμε
 EXCLUDED_DIR_NAMES = {
     "__pycache__",
@@ -25,7 +26,6 @@ SYSTEM_PATH_PREFIXES = {
 }
 
 CURRENT_OS = platform.system()
-
 
 def is_excluded_dir(path: str) -> bool:
     """Επιστρέφει True αν το path περιέχει κάποιον από τους αποκλεισμένους φακέλους."""

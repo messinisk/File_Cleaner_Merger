@@ -20,6 +20,7 @@ logging.basicConfig(
 # -------------------------------
 # 🔍 Υπολογισμός hash αρχείου
 # -------------------------------
+
 def file_hash(path):  # type: ignore
     """Υπολογίζει SHA256 hash του αρχείου."""
     hasher = hashlib.sha256()
@@ -32,6 +33,7 @@ def file_hash(path):  # type: ignore
 # -------------------------------
 # 📄 Ανάκτηση μεταδεδομένων αρχείου
 # -------------------------------
+
 def get_file_metadata(path):  # type: ignore
     """Επιστρέφει όνομα, διαδρομή, hash, ημερομηνία δημιουργίας/τροποποίησης."""
     try:
@@ -51,6 +53,7 @@ def get_file_metadata(path):  # type: ignore
 # -------------------------------
 # 🧩 Κύρια συνάρτηση σάρωσης φακέλου
 # -------------------------------
+
 def inspect_directory_state(base_path: str) -> list[dict]:  # type: ignore
     """
     Σαρώνει φάκελο και εντοπίζει αρχεία με:
@@ -60,11 +63,11 @@ def inspect_directory_state(base_path: str) -> list[dict]:  # type: ignore
     """
     base_path = os.path.abspath(base_path)
 
-    if not is_valid_directory(base_path):
+    if not is_valid_directory(base_path): # pyright: ignore[reportCallIssue, reportArgumentType]
         return []
 
-    file_info_list = collect_file_info(base_path)
-    log_skipped_files(base_path)
+    file_info_list = collect_file_info(base_path) # pyright: ignore[reportCallIssue, reportArgumentType]
+    log_skipped_files(base_path) # pyright: ignore[reportCallIssue, reportArgumentType]
     name_map = group_files_by_name(file_info_list)
     analyze_duplicate_groups(name_map)
 
@@ -96,7 +99,7 @@ def collect_file_info(base_path: str) -> list[dict]:
         if not is_excluded_dir(root) and not is_system_path(root)
         for file in files
         if os.path.isfile(full_path := os.path.join(root, file))
-        if (metadata := get_file_metadata(full_path))
+        if (metadata := get_file_metadata(full_path)) # pyright: ignore[reportArgumentType] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # type: ignore
     ]
 
 
@@ -121,15 +124,14 @@ def group_files_by_name(file_info_list: list[dict]) -> dict[str, list[dict]]:
 def analyze_duplicate_groups(name_map: dict[str, list[dict]]) -> None:
     """Αναλύει τα αρχεία με ίδιο όνομα και καταγράφει αν είναι ίδια ή διαφορετικά."""
     for name, files in name_map.items():
-        if not should_analyze_group(files):
+        if not should_analyze_group(files): # pyright: ignore[reportCallIssue, reportArgumentType]
             continue
 
-        versions = group_files_by_hash(files)
+        versions = group_files_by_hash(files) # pyright: ignore[reportCallIssue, reportArgumentType]
         if len(versions) == 1:
-            log_identical_group(name)
+            log_identical_group(name) # pyright: ignore[reportArgumentType, reportCallIssue]
         else:
-            log_versioned_group(name, versions)
-
+            log_versioned_group(name, versions) # pyright: ignore[reportCallIssue]
 
 def should_analyze_group(files: list[dict]) -> bool:
     """Επιστρέφει True αν η λίστα έχει περισσότερα από 1 αρχεία."""
@@ -185,6 +187,7 @@ def get_all_file_info(
     return file_infos  # pyright: ignore[reportUnknownVariableType]
 
 
+
 def group_duplicates(
     file_infos: list[dict],
 ) -> list[list[dict]]:  # pyright: ignore[reportMissingTypeArgument, reportUnknownParameterType]
@@ -194,7 +197,3 @@ def group_duplicates(
         grouped[info["hash"]].append(info)  # pyright: ignore[reportUnknownMemberType]
 
     return list(grouped.values())  # pyright: ignore[reportUnknownArgumentType, reportUnknownVariableType]
-
-
-if __name__ == "__main__":
-    print(inspect_directory_state("./"))  # type: ignore
