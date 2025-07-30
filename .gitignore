@@ -10,3 +10,5 @@ htmlcov/
 .coverage
 .vscode
 .ruff_cache
+/procomit
+run.py

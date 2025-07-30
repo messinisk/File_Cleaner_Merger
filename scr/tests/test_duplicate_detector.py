@@ -1,10 +1,9 @@
 import os
 import shutil
+import stat  # noqa: F401
 import sys
 import tempfile
 import unittest
-import stat  # noqa: F401
-
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from duplicate_detector import inspect_directory_state  # type: ignore
@@ -92,7 +91,6 @@ class TestDuplicateDetector(unittest.TestCase):
         result = inspect_directory_state(self.test_dir)
         self.assertFalse(any("ignored.pyc" in f["path"] for f in result))
 
-    
     def test_is_system_path_override(self):
         from exclusion_config import is_system_path
 
@@ -104,7 +102,7 @@ class TestDuplicateDetector(unittest.TestCase):
         else:
             self.assertTrue(is_system_path("/proc/fake_entry"))
             self.assertFalse(is_system_path("/home/user/project"))
-    
+
     def test_is_system_path_windows(self):
         from exclusion_config import is_system_path
 

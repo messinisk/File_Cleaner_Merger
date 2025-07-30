@@ -1,0 +1,21 @@
+# .bandit.yml
+exclude_dirs:
+  - procomit/Lib/site-packages/pip/_vendor
+  - procomit/Lib/site-packages/virtualenv
+  - procomit/Lib/site-packages/rich
+
+# Αγνόηση συγκεκριμένων κωδικών σφαλμάτων σε τρίτο κώδικα
+skips:
+  - B101
+  - B311
+  - B404
+  - B603
+  - B202
+
+# Προσαρμοσμένο επίπεδο σοβαρότητας
+severity:
+  - HIGH
+  - MEDIUM
+
+confidence:
+  - HIGH

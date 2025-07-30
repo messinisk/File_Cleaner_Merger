@@ -44,7 +44,7 @@ def get_file_metadata(path):  # type: ignore
             "modified": datetime.fromtimestamp(stat.st_mtime),
         }
     except Exception as e:
-        logging.error(f"Σφάλμα κατά την ανάγνωση του αρχείου: {path} -> {e}")
+        logging.warning(f"Σφάλμα κατά την ανάγνωση του αρχείου: {path} -> {e}")
         return None
 
 
