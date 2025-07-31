@@ -1,0 +1,82 @@
+name: Python package
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test-lint:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, 3.10, 3.11, 3.12]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install .[dev]
+        pip install ruff mypy bandit radon isort
+
+    - name: Run unittests
+      run: |
+        python -m unittest discover tests
+
+    - name: Run Ruff (lint)
+      run: ruff src/clearfile
+
+    - name: Run mypy (type check)
+      run: mypy src/clearfile
+
+    - name: Run Bandit (security)
+      run: bandit -r src/clearfile
+
+    - name: Run isort (import order)
+      run: isort --check-only src/clearfile
+
+    - name: Run Radon (complexity)
+      run: radon cc src/clearfile -a
+
+  build-and-publish:
+    needs: build-test-lint
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Build package
+      run: |
+        python -m pip install --upgrade pip build
+        python -m build library
+
+    - name: Publish to Test PyPI
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+      run: |
+        python -m pip install twine
+        python -m twine upload --repository testpypi library/dist/*
+
+    # Για κανονικό PyPI, ξεκλείδωσε το παρακάτω και βάλε το secret PYPI_API_TOKEN
+    # - name: Publish to PyPI
+    #   env:
+    #     TWINE_USERNAME: __token__
+    #     TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+    #   run: |
+    #     python -m twine upload library/dist/*
