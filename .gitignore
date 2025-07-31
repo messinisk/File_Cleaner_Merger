@@ -11,4 +11,44 @@ htmlcov/
 .vscode
 .ruff_cache
 /procomit
-runing.py
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.so
+*.egg-info/
+*.egg
+*.whl
+*.dist-info/
+*.manifest
+*.spec
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.coverage
+*.cache
+*.log
+*.sqlite3
+*.db
+*.DS_Store
+*.idea/
+*.vscode/
+*.pytest_cache/
+*.mypy_cache/
+*.ruff_cache/
+*.tox/
+*.coverage.*
+*.hypothesis/
+*.coverage.*
+*.coverage.*              # Ignore coverage files
+*.coverage.*.json         # Ignore coverage JSON files
+*.coverage.*.xml          # Ignore coverage XML files
+*.coverage.*.html         # Ignore coverage HTML files
+*.coverage.*.txt          # Ignore coverage text files
+*.coverage.*.json.gz      # Ignore compressed coverage JSON files
+*.coverage.*.xml.gz       # Ignore compressed coverage XML files
+*.coverage.*.html.gz      # Ignore compressed coverage HTML files
+*.coverage.*.txt.gz       # Ignore compressed coverage text files           
