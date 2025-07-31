@@ -51,4 +51,22 @@ __pycache__/
 *.coverage.*.json.gz      # Ignore compressed coverage JSON files
 *.coverage.*.xml.gz       # Ignore compressed coverage XML files
 *.coverage.*.html.gz      # Ignore compressed coverage HTML files
-*.coverage.*.txt.gz       # Ignore compressed coverage text files           
+*.coverage.*.txt.gz       # Ignore compressed coverage text files
+*.coverage.*.json.bz2    # Ignore compressed coverage JSON files
+*.coverage.*.xml.bz2     # Ignore compressed coverage XML files
+*.coverage.*.html.bz2    # Ignore compressed coverage HTML files
+*.coverage.*.txt.bz2     # Ignore compressed coverage text files                
+*.coverage.*.json.xz      # Ignore compressed coverage JSON files
+*.coverage.*.xml.xz       # Ignore compressed coverage XML files
+*.coverage.*.html.xz      # Ignore compressed coverage HTML files
+*.coverage.*.txt.xz       # Ignore compressed coverage text files
+*.coverage.*.json.zst     # Ignore compressed coverage JSON files
+*.coverage.*.xml.zst      # Ignore compressed coverage XML files
+*.coverage.*.html.zst     # Ignore compressed coverage HTML files
+*.coverage.*.txt.zst      # Ignore compressed coverage text files
+*.coverage.*.json.lz4     # Ignore compressed coverage JSON files
+*.coverage.*.xml.lz4      # Ignore compressed coverage XML files
+*.coverage.*.html.lz4     # Ignore compressed coverage HTML files
+# Ignore More files
+treeview.py
+treeview.txt
