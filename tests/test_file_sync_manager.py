@@ -5,8 +5,8 @@ import tempfile
 import unittest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from scr.clearfile.file_sync_manager import delete_duplicates  # type: ignore
-from scr.clearfile.file_sync_manager import merge_by_version_date, merge_random_conflict
+from pure_core.file_sync_manager import delete_duplicates  # type: ignore
+from pure_core.file_sync_manager import merge_by_version_date, merge_random_conflict
 
 
 class TestFileSyncManager(unittest.TestCase):

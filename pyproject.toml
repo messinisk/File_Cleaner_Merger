@@ -1,0 +1,14 @@
+[project]
+name = "file-cleaner-merger"
+version = "0.1.0"
+description = "A smart tool to clean, scan and merge files safely."
+readme = "README.md"
+requires-python = ">=3.9.21"
+dependencies = []
+
+
+
+["tool.ruff"]
+# line-length = 100
+# exclude = [".git", "__pycache__", "build", "dist", ".venv"]
+# ignore = ["E501", "F841", "W503"]

@@ -6,7 +6,7 @@ import tempfile
 import unittest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from scr.clearfile.duplicate_detector import inspect_directory_state  # type: ignore
+from pure_core.duplicate_detector import inspect_directory_state  # type: ignore
 
 
 class TestDuplicateDetector(unittest.TestCase):
@@ -92,7 +92,7 @@ class TestDuplicateDetector(unittest.TestCase):
         self.assertFalse(any("ignored.pyc" in f["path"] for f in result))
 
     def test_is_system_path_override(self):
-        from scr.clearfile.exclusion_config import is_system_path
+        from pure_core.exclusion_config import is_system_path
 
         # Προσομοιωμένο system path για Linux
         sys_path = "/proc"  # noqa: F841
@@ -104,7 +104,7 @@ class TestDuplicateDetector(unittest.TestCase):
             self.assertFalse(is_system_path("/home/user/project"))
 
     def test_is_system_path_windows(self):
-        from scr.clearfile.exclusion_config import is_system_path
+        from pure_core.exclusion_config import is_system_path
 
         if os.name != "nt":
             self.skipTest("This test είναι μόνο για Windows")
