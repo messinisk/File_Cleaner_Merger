@@ -6,7 +6,8 @@ import tempfile
 import unittest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from pure_core.duplicate_detector import inspect_directory_state  # type: ignore
+from pure_core.duplicate_detector import \
+    inspect_directory_state  # type: ignore
 
 
 class TestDuplicateDetector(unittest.TestCase):

@@ -6,10 +6,10 @@ It focuses on identifying duplicate files in a folder.
         _type_: _description_
 """
 
-from asyncio.log import logger
 import hashlib
 import logging
 import os
+from asyncio.log import logger
 from collections import defaultdict
 from datetime import datetime
 
