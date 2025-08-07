@@ -7,7 +7,7 @@
 # For more information about configuring your workflow,
 # read our documentation at https://github.com/blackduck-inc/black-duck-security-scan
 
-name: CI Black Duck security scan
+name: File_Cleaner_Merger  
 
 on:
   push:
