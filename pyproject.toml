@@ -8,7 +8,7 @@ dependencies = []
 
 
 
-["tool.ruff"]
-# line-length = 100
-# exclude = [".git", "__pycache__", "build", "dist", ".venv"]
-# ignore = ["E501", "F841", "W503"]
+[tool.ruff]
+line-length = 100
+exclude = [".git", "__pycache__", "build", "dist", ".venv"]
+ignore = ["E501", "F841", "W503"]
