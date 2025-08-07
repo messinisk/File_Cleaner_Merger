@@ -1,14 +1,13 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "file-cleaner-merger"
+name = "file_cleaner_merger"
 version = "0.1.0"
-description = "A smart tool to clean, scan and merge files safely."
-readme = "README.md"
-requires-python = ">=3.9.21"
-dependencies = []
-
-
-
-[tool.ruff]
-line-length = 100
-exclude = [".git", "__pycache__", "build", "dist", ".venv"]
-ignore = ["E501", "F841", "W503"]
+description = "Καθαριστής και Συγχωνευτής αρχείων"
+authors = [
+  { name="kostas messsinis", email="messinisk35@gmail.com" }
+]
+dependencies = ["pandas", "numpy"]
+requires-python = ">=3.9"
