@@ -1,29 +1,23 @@
-name: Docker Python Tests
+name: Python package
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [push]
 
 jobs:
-  docker-test:
-    runs-on: ${{ matrix.os }}
+  build:
+
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        python-version: [3.9, 3.10, 3.11, 3.12]
+        python: ["3.9", "3.11", "3.13"]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Build Docker image for Python ${{ matrix.python-version }}
-        run: |
-          docker build \
-            -t test-python-${{ matrix.python-version }} \
-            --file ./docker/${{ matrix.python-version }}/Dockerfile .
-
-      - name: Run tests in Docker container
-        run: |
-          docker run --rm test-python-${{ matrix.python-version }}
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install tox and any other packages
+        run: pip install tox
+      - name: Run tox
+        # Run tox using the version of Python in `PATH`
+        run: tox -e py
