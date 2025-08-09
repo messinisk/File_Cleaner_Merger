@@ -19,7 +19,8 @@ jobs:
 
       - name: Build Docker image for Python ${{ matrix.python-version }}
         run: |
-          docker build -t test-python-${{ matrix.python-version }} ./docker/${{ matrix.python-version }}
+          docker build -t test-python-${{ matrix.python-version }} \
+            --file ./docker/${{ matrix.python-version }}/Dockerfile .
 
       - name: Run tests in Docker container
         run: |
