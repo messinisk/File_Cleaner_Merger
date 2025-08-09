@@ -2,9 +2,9 @@ name: Docker Python Tests
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   docker-test:
@@ -22,7 +22,6 @@ jobs:
           docker build \
             -t test-python-${{ matrix.python-version }} \
             --file ./docker/${{ matrix.python-version }}/Dockerfile .
-
 
       - name: Run tests in Docker container
         run: |
