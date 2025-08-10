@@ -74,3 +74,7 @@ treeview.txt
 .venv3921/
 .venv31014/
 .venv31111/
+.venv/
+story.txt
+uv.lock
+.nox/

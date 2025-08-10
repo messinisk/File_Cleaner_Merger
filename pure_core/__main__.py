@@ -1,5 +1,9 @@
-from collections import defaultdict
+import sys
+import os
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from collections import defaultdict
 from pure_core.duplicate_detector import inspect_directory_state
 from pure_core.file_sync_manager import (
     delete_duplicates,
@@ -59,8 +63,10 @@ def process_files(base_path: str):
 
 
 if __name__ == "__main__":
-    import os
+    if len(sys.argv) > 1:
+        target_path = sys.argv[1]
+    else:
+        target_path = os.getcwd()
 
-    current_path = os.path.dirname(os.path.abspath(__file__))
-    target_path = os.path.join(current_path, "./")
-    process_files(target_path)
+    result = process_files(target_path)
+    print("Process result:", result, "in", target_path)
