@@ -8,32 +8,27 @@ on:
 
 jobs:
   test:
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Python 3.9
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
-      - name: Setup Python 3.10
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - name: Setup Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: Setup Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Check python versions
-        run: |
-          python3.9 --version
-          python3.10 --version
-          python3.11 --version
-          python3.12 --version
+          python-version: ${{ matrix.python-version }}
+
       - name: Install tox
         run: pip install tox
-      - name: Run tox
-        run: tox -vvv
+
+      - name: Run tests with tox
+        run: tox
+        env:
+          TOXENV: py${{ matrix.python-version }}
+          CI: true
