@@ -1,22 +1,23 @@
-name: Security Analysis
+# .github/workflows/docker-image.yml
+name: Docker Build
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_call:
 
 jobs:
-    security-checks:
-    uses: ./.github/workflows/docker-image.yml
+  build:
+    runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
+        os: [ubuntu-latest, windows-latest]
         python-version: ["3.9", "3.10", "3.11", "3.12"]
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: echo "Building on ${{ matrix.os }} with Python ${{ matrix.python-version }}"
+
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -31,18 +32,18 @@ jobs:
       - name: Run tox (existing lint/tests)
         run: tox
 
-    codeql-analysis:
+  codeql-analysis:
     needs: security-checks
     uses: github/codeql-action/init@v3
     with:
       languages: python
     secrets: inherit
 
-    codeql-analyze:
+  codeql-analyze:
     needs: codeql-analysis
     uses: github/codeql-action/analyze@v3
 
-    pyre:
+  pyre:
     needs: security-checks
     runs-on: ubuntu-latest
     steps:
@@ -54,23 +55,23 @@ jobs:
           pip install pyre-check
           pyre --noninteractive check
 
-    pysa:
-        needs: security-checks
-        runs-on: ubuntu-latest
-        steps:
-        - uses: actions/checkout@v4
-        - uses: actions/setup-python@v5
-          with:
-            python-version: "3.12"
-        - run: |
-            pip install pyre-check
-            pyre analyze
+  pysa:
+    needs: security-checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: |
+          pip install pyre-check
+          pyre analyze
 
-    ossar:
-        needs: security-checks
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - uses: github/ossar-action@v1
-            with:
-                sarif_file: ossar-results.sarif
+  ossar:
+    needs: security-checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/ossar-action@v1
+        with:
+          sarif_file: ossar-results.sarif
