@@ -3,14 +3,15 @@ import shutil
 import sys
 import tempfile
 import unittest
+import platform
 
+if platform.system() == "Darwin":
+    raise unittest.SkipTest("Skipping all tests on macOS")
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from pure_core.duplicate_detector import inspect_directory_state  # type: ignore
 from pure_core.exclusion_config import is_system_path  # type: ignore
 
-if sys.platform == "darwin":
-    raise unittest.SkipTest("Skipping all tests on macOS")
 
 
 class TestDuplicateDetector(unittest.TestCase):

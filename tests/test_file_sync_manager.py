@@ -3,13 +3,16 @@ import shutil
 import sys
 import tempfile
 import unittest
+import platform
+
+if platform.system() == "Darwin":
+    raise unittest.SkipTest("Skipping all tests on macOS")
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from pure_core.file_sync_manager import delete_duplicates  # type: ignore
 from pure_core.file_sync_manager import merge_by_version_date, merge_random_conflict
 
-if sys.platform == "darwin":
-    raise unittest.SkipTest("Skipping all tests on macOS")
+
 
 class TestFileSyncManager(unittest.TestCase):
     def setUp(self):
