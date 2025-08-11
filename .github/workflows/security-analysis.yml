@@ -7,9 +7,12 @@ on:
     branches: [ main ]
 
 jobs:
-  security-checks:
+    security-checks:
     uses: ./.github/workflows/docker-image.yml
-
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
       - name: Checkout repository
@@ -28,18 +31,18 @@ jobs:
       - name: Run tox (existing lint/tests)
         run: tox
 
-  codeql-analysis:
+    codeql-analysis:
     needs: security-checks
     uses: github/codeql-action/init@v3
     with:
       languages: python
     secrets: inherit
 
-  codeql-analyze:
+    codeql-analyze:
     needs: codeql-analysis
     uses: github/codeql-action/analyze@v3
 
-  pyre:
+    pyre:
     needs: security-checks
     runs-on: ubuntu-latest
     steps:
@@ -51,23 +54,23 @@ jobs:
           pip install pyre-check
           pyre --noninteractive check
 
-  pysa:
-    needs: security-checks
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: |
-          pip install pyre-check
-          pyre analyze
+    pysa:
+        needs: security-checks
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v4
+        - uses: actions/setup-python@v5
+          with:
+            python-version: "3.12"
+        - run: |
+            pip install pyre-check
+            pyre analyze
 
-  ossar:
-    needs: security-checks
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: github/ossar-action@v1
-        with:
-          sarif_file: ossar-results.sarif
+    ossar:
+        needs: security-checks
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: github/ossar-action@v1
+            with:
+                sarif_file: ossar-results.sarif

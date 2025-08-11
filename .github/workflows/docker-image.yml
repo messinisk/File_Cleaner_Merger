@@ -1,6 +1,8 @@
 name: Multi-OS with Tox
 
+
 on:
+  workflow_call:
   push:
     branches: [ main ]
   pull_request:
