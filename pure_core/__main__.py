@@ -13,6 +13,14 @@ from pure_core.file_sync_manager import (
 
 
 def group_files_by_name(file_infos):
+    """_summary_
+
+    Args:
+        file_infos (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     grouped = defaultdict(list)
     for f in file_infos:
         grouped[f["name"]].append(f)
@@ -20,6 +28,14 @@ def group_files_by_name(file_infos):
 
 
 def group_files_by_hash(files):
+    """_summary_
+
+    Args:
+        files (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     grouped = defaultdict(list)
     for f in files:
         grouped[f["hash"]].append(f)
@@ -27,12 +43,22 @@ def group_files_by_hash(files):
 
 
 def handle_duplicates(hashes):
+    """_summary_
+
+    Args:
+        hashes (bool): _description_
+    """
     for group in hashes.values():
         if len(group) > 1:
             delete_duplicates(group)
 
 
 def handle_merges(hashes):
+    """_summary_
+
+    Args:
+        hashes (bool): _description_
+    """
     remaining = [f for group in hashes.values() if len(group) == 1 for f in group]
     while len(remaining) >= 2:
         f1 = remaining.pop()
@@ -46,6 +72,11 @@ def handle_merges(hashes):
 
 
 def process_files(base_path: str):
+    """_summary_
+
+    Args:
+        base_path (str): _description_
+    """
     file_infos = inspect_directory_state(base_path)
     if not file_infos:
         print("⚠️ Δεν βρέθηκαν αρχεία προς ανάλυση.")
@@ -63,6 +94,8 @@ def process_files(base_path: str):
 
 
 if __name__ == "__main__":
+    """_summary_
+    """
     if len(sys.argv) > 1:
         target_path = sys.argv[1]
     else:

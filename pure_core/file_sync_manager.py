@@ -1,96 +1,68 @@
-"""Συγχωνεύει δύο αρχεία με βάση την ημερομηνία και ώρα δημιουργία του και περιεχομενω .
-
-Args:
-    file_a (dict): Πληροφορίες για το πρώτο αρχείο.
-    file_b (dict): Πληροφορίες για το δεύτερο αρχείο.
+"""
+Συγχωνεύει δύο αρχεία με βάση την ημερομηνία και ώρα δημιουργίας ή με τυχαία επιλογή.
+Επίσης, παρέχει δυνατότητα διαγραφής διπλών αρχείων.
 """
 
-import logging
 import os
 import secrets
-
-logging.basicConfig(
-    filename="file_inspector.log",
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-)
+from typing import Dict
+from pure_core.logfile import LogOpject
 
 
-def merge_by_version_date(file_a: dict, file_b: dict) -> None:  # type: ignore
-    """Συγχωνεύει δύο αρχεία με βάση την ημερομηνία δημιουργίας τους.
+@LogOpject("info")
+def merge_by_version_date(file_a: Dict, file_b: Dict) -> str:
+    """Συγχωνεύει δύο αρχεία με βάση την ημερομηνία δημιουργίας τους."""
 
-    Args:
-        file_a (dict): Πληροφορίες για το πρώτο αρχείο.
-        file_b (dict): Πληροφορίες για το δεύτερο αρχείο.
-    """
+    created_a = os.path.getctime(file_a["path"])
+    created_b = os.path.getctime(file_b["path"])
 
-    try:
-        created_a = os.path.getctime(file_a["path"])  # type: ignore
-        created_b = os.path.getctime(file_b["path"])  # type: ignore
+    # Επιλογή με βάση ποιο αρχείο είναι παλιότερο
+    base, other = (file_a, file_b) if created_a <= created_b else (file_b, file_a)
 
-        if created_a <= created_b:
-            base = file_a  # type: ignore
-            other = file_b  # type: ignore
-        else:
-            base = file_b  # type: ignore
-            other = file_a  # type: ignore
+    # Αν τα timestamps είναι ίδια, διαλέγουμε file_a ως base
+    if created_a == created_b:
+        base, other = file_a, file_b
 
-        # Διαβάζουμε το περιεχόμενο του νεότερου αρχείου
-        with open(other["path"], "r", encoding="utf-8") as f_other:  # type: ignore
-            content_to_merge = f_other.read()
+    # Διαβάζουμε το περιεχόμενο του νεότερου αρχείου
+    with open(other["path"], "r", encoding="utf-8") as f_other:
+        content_to_merge = f_other.read()
 
-        # Προσθέτουμε στο ΤΕΛΟΣ του παλιού αρχείου
-        with open(base["path"], "a", encoding="utf-8") as f_base:  # type: ignore
-            f_base.write("\n\n# --- Merged version ---\n")
-            f_base.write(f"# Συγχώνευση από: {os.path.basename(other['path'])}\n")  # type: ignore
-            f_base.write(content_to_merge)
+    # Προσθέτουμε στο τέλος του παλιού αρχείου
+    with open(base["path"], "a", encoding="utf-8") as f_base:
+        f_base.write("\n\n# --- Merged version ---\n")
+        f_base.write(f"# Συγχώνευση από: {os.path.basename(other['path'])}\n")
+        f_base.write(content_to_merge)
 
-        # Διαγράφουμε ΜΟΝΟ το άλλο αρχείο
-        os.remove(other["path"])  # type: ignore
+    # Διαγράφουμε το άλλο αρχείο
+    os.remove(other["path"])
 
-        logging.info(f"Συγχωνεύθηκαν εκδόσεις: {other['path']} -> {base['path']}")
-
-    except Exception as e:
-        logging.error(f"Σφάλμα συγχώνευσης εκδόσεων: {e}")
+    return f"Συγχωνεύθηκαν εκδόσεις: {other['path']} -> {base['path']}"
 
 
-def merge_random_conflict(file_a: dict, file_b: dict) -> None:  # type: ignore
-    """Συγχωνεύει δύο αρχεία τυχαία.
+@LogOpject("info")
+def merge_random_conflict(file_a: dict, file_b: dict) -> str:  # type: ignore
+    """Συγχωνεύει δύο αρχεία τυχαία."""
 
-    Args:
-        file_a (dict): Πληροφορίες για το πρώτο αρχείο.
-        file_b (dict): Πληροφορίες για το δεύτερο αρχείο.
-    """
     chosen, discarded = (
         (file_a, file_b) if secrets.choice([True, False]) else (file_b, file_a)
     )  # type: ignore
 
-    try:
-        with open(discarded["path"], "r", encoding="utf-8") as f_disc:  # type: ignore
-            content_to_merge = f_disc.read()
+    with open(discarded["path"], "r", encoding="utf-8") as f_disc:  # type: ignore
+        content_to_merge = f_disc.read()
 
-        with open(chosen["path"], "a", encoding="utf-8") as f_chosen:  # type: ignore
-            f_chosen.write("\n\n# --- Merged random conflict ---\n")
-            f_chosen.write(f"# Συγχώνευση από: {os.path.basename(discarded['path'])}\n")  # type: ignore
-            f_chosen.write(content_to_merge)
+    with open(chosen["path"], "a", encoding="utf-8") as f_chosen:  # type: ignore
+        f_chosen.write("\n\n# --- Merged random conflict ---\n")
+        f_chosen.write(f"# Συγχώνευση από: {os.path.basename(discarded['path'])}\n")  # type: ignore
+        f_chosen.write(content_to_merge)
 
-        os.remove(discarded["path"])  # type: ignore
-        logging.info(f"Τυχαία συγχώνευση: {discarded['path']} -> {chosen['path']}")
-
-    except Exception as e:
-        logging.error(f"Σφάλμα τυχαίας συγχώνευσης: {e}")
+    os.remove(discarded["path"])  # type: ignore
+    return f"Τυχαία συγχώνευση: {discarded['path']} -> {chosen['path']}"  # pyright: ignore[reportReturnType]
 
 
-def delete_duplicates(duplicate_files: list[dict]) -> None:  # type: ignore
-    """Διαγράφει τα διπλά αρχεία.
+@LogOpject("info")
+def delete_duplicates(duplicate_files: list[dict]) -> str:  # type: ignore
+    """Διαγράφει τα διπλά αρχεία, κρατώντας το πρώτο."""
 
-    Args:
-        duplicate_files (list[dict]): Λίστα με πληροφορίες για τα διπλά αρχεία.
-    """
-    duplicate_files[0]  # type: ignore
     for dup in duplicate_files[1:]:  # type: ignore
-        try:
-            os.remove(dup["path"])  # type: ignore
-            logging.info(f"Διαγράφηκε διπλό αρχείο: {dup['path']}")
-        except Exception as e:
-            logging.error(f"Σφάλμα διαγραφής διπλού: {dup['path']} -> {e}")
+        os.remove(dup["path"])  # type: ignore
+    return f"Διαγράφηκαν {len(duplicate_files) - 1} διπλά"  # pyright: ignore[reportReturnType]

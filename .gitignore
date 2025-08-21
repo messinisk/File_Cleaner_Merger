@@ -78,3 +78,6 @@ treeview.txt
 story.txt
 uv.lock
 .nox/
+this_moment.txt
+pytest.ini
+/features
