@@ -14,7 +14,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest,  windows-latest, Kernel-latest, 	]
+        os: [
+          # Desktop / Server Linux
+          ubuntu-latest,      # Ubuntu Desktop / Server LTS
+          debian-latest,      # Debian stable
+          fedora-latest,      # Fedora Workstation / Server
+          rocky-latest,       # Rocky Linux (RHEL-based)
+          
+          # Windows
+          windows-latest,     # Windows 10/11
+          
+          # Mobile / Embedded Linux
+          android-latest,     # Android emulator / AOSP
+          raspios-latest,     # Raspberry Pi OS (ARM)
+          kali-arm-latest     # Kali Linux ARM (pentesting / IoT)
+        ]
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
