@@ -1,6 +1,5 @@
 name: Multi-OS with Tox
 
-
 on:
   workflow_call:
   push:
@@ -10,75 +9,25 @@ on:
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        arch: [x64]
         include:
           - os: ubuntu-latest
-            arch: x64
-            purpose: desktop
-          - os: ubuntu-latest
             arch: arm64
             purpose: mobile
           - os: ubuntu-latest
             arch: x64
-            purpose: server
-          - os: debian-latest
-            arch: x64
-            purpose: desktop
-          - os: debian-latest
-            arch: arm64
-            purpose: mobile
-          - os: debian-latest
-            arch: x64
-            purpose: server
-          - os: fedora-latest
-            arch: x64
-            purpose: desktop
-          - os: fedora-latest
-            arch: arm64
-            purpose: mobile
-          - os: fedora-latest
-            arch: x64
-            purpose: server
-          - os: rocky-latest
-            arch: x64
-            purpose: desktop
-          - os: rocky-latest
-            arch: arm64
-            purpose: mobile
-          - os: rocky-latest
-            arch: x64
-            purpose: server
-          - os: windows-latest
-            arch: x64
             purpose: desktop
           - os: windows-latest
-            arch: arm64
-            purpose: mobile
-          - os: windows-latest
             arch: x64
-            purpose: server
+            purpose: desktop
 
-        # os: [
-        #   # Desktop / Server Linux
-        #   ubuntu-latest,      # Ubuntu Desktop / Server LTS
-        #   debian-latest,      # Debian stable
-        #   fedora-latest,      # Fedora Workstation / Server
-        #   rocky-latest,       # Rocky Linux (RHEL-based)
-          
-        #   # Windows
-        #   windows-latest,     # Windows 10/11
-          
-        #   # Mobile / Embedded Linux
-        #   android-latest,     # Android emulator / AOSP
-        #   raspios-latest,     # Raspberry Pi OS (ARM)
-        #   kali-arm-latest     # Kali Linux ARM (pentesting / IoT)
-        # ]
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
-      
-       
+    runs-on: ${{ matrix.os }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
