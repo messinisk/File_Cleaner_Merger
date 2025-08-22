@@ -6,6 +6,7 @@ exclusion_config.py
 ανάλογα με το λειτουργικό σύστημα.
 """
 
+# exclusion_config.py
 import os
 import platform
 import re

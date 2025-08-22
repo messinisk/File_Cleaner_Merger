@@ -6,6 +6,7 @@ It scans a directory, collects metadata for each valid file, groups files by nam
 and analyzes potential duplicates and versions based on file content and metadata.
 """
 
+# duplicate_detector.py
 import hashlib
 import os
 from collections import defaultdict
@@ -33,6 +34,28 @@ class FileMetadata(TypedDict):
     hash: str
     created: datetime
     modified: datetime
+
+
+ALLOWED_EXTENSIONS = {
+    ".txt",
+    ".csv",
+    ".xlsx",
+    ".docx",
+    ".pptx",
+    ".pdf",
+    ".odt",
+    ".ods",
+    ".odp",
+}
+
+
+def is_allowed_file(filename: str) -> bool:
+    ext = os.path.splitext(filename)[1].lower()
+    return ext in ALLOWED_EXTENSIONS
+
+
+def is_hidden_or_system_file(filename: str) -> bool:
+    return filename.startswith(".") or filename.lower() in {"desktop.ini", "thumbs.db"}
 
 
 # -------------------------------
@@ -163,7 +186,7 @@ def is_valid_directory(path: str) -> bool:
     return os.path.isdir(path)
 
 
-@LogOpject("info")
+@LogOpject("warning")
 def collect_file_info(base_path: str) -> list[dict]:
     """
     Σαρώνει έναν φάκελο και τους υποφακέλους του, συλλέγοντας
@@ -187,14 +210,29 @@ def collect_file_info(base_path: str) -> list[dict]:
     Returns:
         list[dict]: Λίστα με μεταδεδομένα για κάθε αρχείο που βρέθηκε.
     """
-    return [
-        metadata
-        for root, _, files in os.walk(base_path)
-        if not is_excluded_dir(root) and not is_system_path(root)
-        for file in files
-        if os.path.isfile(full_path := os.path.join(root, file))
-        if (metadata := get_file_metadata(full_path))  # pyright: ignore[reportArgumentType] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # pyright: ignore[reportCallIssue] # type: ignore
-    ]
+    file_infos = []
+
+    for root, _, files in os.walk(base_path):
+        # Έλεγχος αν ο φάκελος πρέπει να αγνοηθεί
+        if is_excluded_dir(root) or is_system_path(root):
+            continue
+
+        for fname in files:
+            full_path = os.path.join(root, fname)
+
+            # Έλεγχος αν το αρχείο είναι έγκυρο
+            if not is_allowed_file(fname):
+                continue
+
+            if is_hidden_or_system_file(fname):
+                continue
+
+            # Απόκτηση metadata
+            metadata = get_file_metadata(full_path)
+            if metadata:
+                file_infos.append(metadata)
+
+    return file_infos
 
 
 @LogOpject("warning")
