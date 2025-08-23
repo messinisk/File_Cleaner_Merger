@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, debian-latest]
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
         arch: [x64]
         include:
@@ -34,6 +34,9 @@ jobs:
           - os: windows-latest
             arch: x64
             purpose: server
+          - os: debian-latest
+            arch: x64
+            purpose: desktop
 
     runs-on: ${{ matrix.os }}
 
