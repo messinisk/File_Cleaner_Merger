@@ -35,7 +35,7 @@ jobs:
             arch: x64
             purpose: server
           - os: debian-latest
-            arch: x64
+            arch: amd64
             purpose: desktop
 
     runs-on: ${{ matrix.os }}
