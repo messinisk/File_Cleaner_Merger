@@ -35,10 +35,10 @@ jobs:
             arch: x64
             purpose: server
           - os: fedora-latest
-            arch: amd64
+            arch: x64
             purpose: desktop
           - os: fedora-latest
-            arch: amd64
+            arch: x64
             purpose: server
 
     runs-on: ${{ matrix.os }}
