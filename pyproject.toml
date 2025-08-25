@@ -5,6 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "file_cleaner_merger"
 version = "1.0.0"
+requires-python = ">=3.9,<3.12"
 description = "Καθαριστής και Συγχωνευτής αρχείων - Cross-platform File Cleaner & Merger"
 readme = "README.md"
 authors = [
