@@ -1,0 +1,70 @@
+name: Build & Release
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }} with Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install dependencies
+        run: pip install .[dev]
+      - name: Run tests
+        run: pytest
+
+  build-wheel:
+    name: Build wheel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build wheel
+        run: pip install build && python -m build
+
+  package-desktop:
+    name: Package Desktop App
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps for desktop
+        run: pip install .[desktop-pyqt]
+
+      - name: Build installer
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            pip install pyinstaller
+            pyinstaller --onefile desktop_app/main.py --name FileCleanerMerger
+          elif [[ "$RUNNER_OS" == "Linux" ]]; then
+            pip install pyinstaller
+            pyinstaller --onefile desktop_app/main.py --name file-cleaner-merger
+            # φτιάχνουμε deb package
+            mkdir -p deb/usr/local/bin
+            cp dist/file-cleaner-merger deb/usr/local/bin/
+            fpm -s dir -t deb -n file-cleaner-merger -v 0.2.0 deb/
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-${{ matrix.os }}
+          path: dist/*
