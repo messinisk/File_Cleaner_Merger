@@ -65,7 +65,7 @@ jobs:
           fi
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: desktop-${{ matrix.os }}
           path: dist/*
