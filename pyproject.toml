@@ -5,33 +5,26 @@ build-backend = "hatchling.build"
 [project]
 name = "file_cleaner_merger"
 version = "1.0.0"
-requires-python = ">=3.9,<3.12"
+requires-python = ">=3.9,<3.13"
 description = "Καθαριστής και Συγχωνευτής αρχείων - Cross-platform File Cleaner & Merger"
 readme = "README.md"
 authors = [
     { name="kostas messsinis", email="messinisk35@gmail.com"}
 ]
 license = { text = "MIT" }
-requires-python = ">=3.9"
 
 
-# Πυρήνας: μόνος του, χωρίς επικίνδυνα dependencies
-dependencies = []
+# Ο πυρήνας χωρίς επικίνδυνα dependencies
+dependencies = [
+    # εδώ μπορείς να προσθέσεις αν χρειαστεί π.χ. "pathlib", "shutil" είναι built-in
+]
 
 [project.optional-dependencies]
-# Desktop flavors
-desktop-pyqt = ["PyQt6"]
-desktop-gtk = ["PyGObject; sys_platform != 'win32'"] # GTK μόνο σε Linux/macOS
-desktop-tk = []  # Tkinter έρχεται built-in με Python
+# Mobile/Desktop (Kivy καλύπτει και τα δύο)
+gui = ["kivy"]
 
-# Server
-server = ["fastapi", "uvicorn"]
-
-# Mobile
-mobile = ["kivy"]
-
-# Dev tools
+# Developer tools
 dev = ["pytest", "mypy", "black"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["pure_core", "desktop_app", "server_app", "mobile_app"]
+packages = ["core", "app"]
