@@ -1,5 +1,6 @@
 import difflib
 from typing import List
+
 from core import File
 
 
@@ -24,13 +25,15 @@ class FileSimilarity:
         n = len(files)
         for i in range(n):
             for j in range(i + 1, n):
-                score = FileSimilarity.similarity_score(files[i].content, files[j].content)
+                score = FileSimilarity.similarity_score(
+                    files[i].content, files[j].content
+                )
                 if score >= threshold:
-                    suggestions.append({
-                        "file_a": files[i].name,
-                        "file_b": files[j].name,
-                        "score": round(score, 2)
-                    })
+                    suggestions.append(
+                        {
+                            "file_a": files[i].name,
+                            "file_b": files[j].name,
+                            "score": round(score, 2),
+                        }
+                    )
         return suggestions
-
-

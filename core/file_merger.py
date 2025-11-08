@@ -1,7 +1,7 @@
 import os
-from typing import List, Dict, Optional
-from core import File,FileGroup
+from typing import Dict, List, Optional
 
+from core import File, FileGroup
 
 
 class FileMerger:
@@ -38,4 +38,3 @@ class FileMerger:
             merged_content = group.merge()
             merged_dict[f"group_{i}"] = merged_content
         return merged_dict
-    

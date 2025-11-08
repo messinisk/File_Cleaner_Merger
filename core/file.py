@@ -1,9 +1,10 @@
-import os
 import hashlib
+import os
+
 
 class File:
     """Αντικείμενο που αντιπροσωπεύει ένα αρχείο προς συγχώνευση."""
-    
+
     def __init__(self, path: str):
         self.path = path
         self.name = os.path.basename(path)

@@ -1,10 +1,11 @@
-from typing import List,  Optional
+from typing import List, Optional
+
 from core import File
 
 
 class FileGroup:
     """Ομάδα αρχείων που μοιάζουν/πρέπει να συγχωνευτούν."""
-    
+
     def __init__(self, files: Optional[List[File]] = None):
         self.files: List[File] = files if files else []
 

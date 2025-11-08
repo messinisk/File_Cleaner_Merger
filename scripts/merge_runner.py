@@ -1,5 +1,4 @@
-
-from core import  FileMerger, FileSimilarity
+from core import FileMerger, FileSimilarity
 
 merger = FileMerger(root_folder="./sample_files")
 merger.scan_files([".txt"])
