@@ -21,6 +21,18 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: "pip"
+        
+      - name: Debug Python environment
+        run: |
+          echo "Python executable path:"
+          which python
+          echo "Python version:"
+          python --version
+          echo "Full platform info:"
+          python -m platform
+          echo "Pip version:"
+          pip --version
 
       - name: Show Python version
         run: python --version
