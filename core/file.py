@@ -5,8 +5,9 @@ import os
 class File:
     """Αντικείμενο που αντιπροσωπεύει ένα αρχείο προς συγχώνευση."""
 
-    def __init__(self, path: str):
+    def __init__(self, path: str, hash: str = " "):
         self.path = path
+        self.hash = hash or self._compute_hash()
         self.name = os.path.basename(path)
         self.size = os.path.getsize(path)
         self.modified_time = os.path.getmtime(path)

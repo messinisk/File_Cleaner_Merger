@@ -24,12 +24,15 @@ class FileMerger:
     def auto_group(self):
         """Απλό grouping βασισμένο σε hash ταυτότητας"""
         hash_map: Dict[str, FileGroup] = {}
+        
         for file in self.files:
             if file.hash in hash_map:
                 hash_map[file.hash].add_file(file)
             else:
                 hash_map[file.hash] = FileGroup([file])
+        
         self.groups = list(hash_map.values())
+
 
     def merge_all(self) -> Dict[str, str]:
         """Επιστρέφει ένα dictionary με το όνομα ομάδας και το merged περιεχόμενο"""

@@ -12,13 +12,14 @@ class FileGroup:
     def add_file(self, file: File):
         self.files.append(file)
 
-    def similarity_score(self) -> float:
-        """Υπολογίζει ένα απλό score βασισμένο σε κοινό περιεχόμενο (προτεινόμενο)."""
+    def similarity_score(self, other_file):
         if not self.files:
             return 0.0
-        hashes = [f.hash for f in self.files]
-        unique_hashes = set(hashes)
-        return 1 - len(unique_hashes) / len(hashes)
+        # Παράδειγμα: υπολογίζει τη μέση ομοιότητα με τα υπάρχοντα αρχεία
+        from core.similarity import FileSimilarity
+        sim = FileSimilarity()
+        scores = [sim.similarity_score(f.content, other_file.content) for f in self.files]
+        return sum(scores) / len(scores)
 
     def merge(self) -> str:
         """Απλή συγχώνευση περιεχομένου"""
