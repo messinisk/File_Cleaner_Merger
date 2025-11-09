@@ -1,0 +1,26 @@
+site_name: File Cleaner & Merger
+site_url: https://kostas-messinis.github.io/file-cleaner-merger/
+repo_url: https://github.com/kostas-messinis/file-cleaner-merger
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - content.code.copy
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: true
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Usage: usage.md
+  - Architecture: architecture.md
+  - API Reference:
+      - Core: api/core.md
+      - Scripts: api/scripts.md

@@ -1,0 +1,3 @@
+# Scripts API
+
+::: scripts
