@@ -1,8 +1,11 @@
 name: Build Executable
 
 on:
-  workflow_dispatch:  # χειροκίνητο trigger, δεν τρέχει σε κάθε push
-
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    
 jobs:
   build-windows-exe:
     name: Build Windows Executable
