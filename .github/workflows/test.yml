@@ -8,22 +8,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  get-python-versions:
-    runs-on: ubuntu-22.04
-    outputs:
-      versions: ${{ steps.extract.outputs.versions }}
-    steps:
-      - name: Fetch versions manifest
-        run: curl -s https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json > manifest.json
-
-      - id: extract
-        run: |
-          versions=$(jq -r '[.[] | select(.stable == true and (.version | startswith("3."))) | .version] | unique | sort | reverse | .[:5]' manifest.json)
-          echo "versions=$versions" >> $GITHUB_OUTPUT
-
   tests:
-    needs: get-python-versions
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: ${{ fromJson(needs.get-python-versions.outputs.versions) }}
+        python-version: ["3.9.25", "3.10.19", "3.11.14", "3.12.12", "3.13.1"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Show Python version
+        run: python --version
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install tox
+
+      - name: Run tests via tox
+        run: tox
